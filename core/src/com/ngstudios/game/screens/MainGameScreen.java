@@ -21,7 +21,7 @@ public class MainGameScreen implements Screen {
     }
 
     public void show() {
-        img = new Texture("badlogic.jpg");
+
     }
 
     public void render(float delta) {
