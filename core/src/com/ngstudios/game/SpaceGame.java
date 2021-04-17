@@ -10,9 +10,12 @@ public class SpaceGame extends Game {
 	public static final int HEIGHT = 650;
 
 	public SpriteBatch batch;
+
+	private SplashWorker splashWorker;
 	
 	@Override
 	public void create () {
+		splashWorker.closeSplashScreen();
 		batch = new SpriteBatch();
 		this.setScreen(new MainMenuScreen(this));
 	}
@@ -26,5 +29,13 @@ public class SpaceGame extends Game {
 	@Override
 	public void dispose () {
 		batch.dispose();
+	}
+
+	public SplashWorker getSplashWorker() {
+		return splashWorker;
+	}
+
+	public void setSplashWorker(SplashWorker splashWorker) {
+		this.splashWorker = splashWorker;
 	}
 }

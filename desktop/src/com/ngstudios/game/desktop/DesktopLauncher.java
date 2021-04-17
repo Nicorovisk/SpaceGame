@@ -16,6 +16,10 @@ public class DesktopLauncher {
 
 		config.resizable = false;
 
-		new LwjglApplication(new SpaceGame(), config);
+		SpaceGame spaceGame = new SpaceGame();
+		spaceGame.setSplashWorker(new DesktopSplashWorker());
+
+		new LwjglApplication(spaceGame, config);
 	}
+
 }
