@@ -44,7 +44,7 @@ public class MainMenuScreen implements Screen {
 
         game.batch.begin();
 
-        //Exit Game
+        //Exit Button
         if(Gdx.input.getX() < EXIT_BUTTON_X + EXIT_BUTTON_WIDTH && Gdx.input.getX() > EXIT_BUTTON_X
                 && SpaceGame.HEIGHT - Gdx.input.getY() < EXIT_BUTTON_Y + EXIT_BUTTON_HEIGTH
                 && SpaceGame.HEIGHT - Gdx.input.getY() > EXIT_BUTTON_Y){
@@ -57,7 +57,7 @@ public class MainMenuScreen implements Screen {
             game.batch.draw(exitButtonInactive, EXIT_BUTTON_X, EXIT_BUTTON_Y, EXIT_BUTTON_WIDTH, EXIT_BUTTON_HEIGTH);
         }
 
-        //Play Game
+        //Play button
         if(Gdx.input.getX() < PLAY_BUTTON_X + PLAY_BUTTON_WIDTH && Gdx.input.getX() > PLAY_BUTTON_X
                 && SpaceGame.HEIGHT - Gdx.input.getY() < PLAY_BUTTON_Y + PLAY_BUTTON_HEIGTH
                 && SpaceGame.HEIGHT - Gdx.input.getY() > PLAY_BUTTON_Y){
