@@ -4,9 +4,11 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
-public class Bullet {
+public class Asteroid {
 
-    private static final int SPEED = 500;
+    private static final int SPEED = 250;
+    public static final int WIDTH = 16;
+    private static final int HEIGHT = 16;
     private static Texture texture;
 
     private float x;
@@ -14,18 +16,18 @@ public class Bullet {
 
     public boolean remove = false;
 
-    public Bullet(float x, float y){
+    public Asteroid(float x){
         this.x = x;
-        this.y = y;
+        this.y = Gdx.graphics.getHeight();
 
         if (texture == null){
-            texture = new Texture("bullet.png");
+            texture = new Texture("asteroid.png");
         }
     }
 
     public void update(float deltaTime){
-        y += SPEED * deltaTime;
-        if(y > Gdx.graphics.getHeight()){
+        y -= SPEED * deltaTime;
+        if(y < -HEIGHT){
             remove = true;
         }
     }
@@ -33,5 +35,4 @@ public class Bullet {
     public void render(SpriteBatch batch){
         batch.draw(texture, x, y);
     }
-
 }

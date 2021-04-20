@@ -8,9 +8,11 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.ngstudios.game.SpaceGame;
+import com.ngstudios.game.entities.Asteroid;
 import com.ngstudios.game.entities.Bullet;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 public class MainGameScreen implements Screen {
     public static final float SPEED = 300;
@@ -24,6 +26,9 @@ public class MainGameScreen implements Screen {
     public static final float ROLL_TIMER_SWITCH_TIME = 0.15f;
     public static final float SHOOT_TIMER = 0.3f;
 
+    public static final float MIN_ASTEROID_SPAWN_TIME = 0.3f;
+    public static final float MAX_ASTEROID_SPAWN_TIME = 0.6f;
+
     Animation[] rolls;
 
     float x;
@@ -32,10 +37,13 @@ public class MainGameScreen implements Screen {
     float rollTimer;
     float shootTimer;
     float stateTime;
+    float asteroidSpawnTimer;
 
     SpaceGame game;
+    Random random;
 
     ArrayList<Bullet> bullets;
+    ArrayList<Asteroid> asteroids;
 
     public MainGameScreen(SpaceGame game){
         this.game = game;
@@ -43,6 +51,10 @@ public class MainGameScreen implements Screen {
         x = SpaceGame.WIDTH/2 - SHIP_WIDTH /2;
 
         shootTimer = 0;
+
+        random = new Random();
+
+        asteroidSpawnTimer = random.nextFloat() * (MAX_ASTEROID_SPAWN_TIME - MIN_ASTEROID_SPAWN_TIME) + MIN_ASTEROID_SPAWN_TIME;
 
         roll = 2;
         rolls = new Animation[5];
@@ -57,6 +69,7 @@ public class MainGameScreen implements Screen {
         rolls[4] = new Animation(SHIP_ANIMATION_SPEED,rollSpriteSheet[4]); // full right
 
         bullets = new ArrayList<>();
+        asteroids = new ArrayList<>();
     }
 
     public void show() {
@@ -79,6 +92,23 @@ public class MainGameScreen implements Screen {
             bullets.add(new Bullet(x + offset, y + SHIP_HEIGHT/2 ));
             bullets.add(new Bullet(x + SHIP_WIDTH - offset, y + SHIP_HEIGHT/2));
         }
+
+        // Asteroid Spawn Code
+        asteroidSpawnTimer -= delta;
+        if(asteroidSpawnTimer <= 0){
+            asteroidSpawnTimer = random.nextFloat() * (MAX_ASTEROID_SPAWN_TIME - MIN_ASTEROID_SPAWN_TIME) + MIN_ASTEROID_SPAWN_TIME;
+            asteroids.add(new Asteroid(random.nextInt(Gdx.graphics.getWidth() - Asteroid.WIDTH)));
+        }
+
+        //Update Asteroids
+        ArrayList<Asteroid> asteroidsToRemove = new ArrayList<>();
+        for(Asteroid asteroid : asteroids){
+            asteroid.update(delta);
+            if(asteroid.remove){
+                asteroidsToRemove.add(asteroid);
+            }
+        }
+        asteroids.removeAll(asteroidsToRemove);
 
         // Update bullets
         ArrayList<Bullet> bulletsToRemove = new ArrayList<>();
@@ -176,6 +206,10 @@ public class MainGameScreen implements Screen {
 
         for(Bullet bullet : bullets){
             bullet.render(game.batch);
+        }
+
+        for(Asteroid asteroid : asteroids){
+            asteroid.render(game.batch);
         }
 
         game.batch.draw((TextureRegion) rolls[roll].getKeyFrame(stateTime, true), x, y, SHIP_WIDTH, SHIP_HEIGHT);
