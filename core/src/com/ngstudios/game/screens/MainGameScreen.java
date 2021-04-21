@@ -6,6 +6,8 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.ngstudios.game.SpaceGame;
 import com.ngstudios.game.entities.Asteroid;
@@ -45,11 +47,16 @@ public class MainGameScreen implements Screen {
     ArrayList<Bullet> bullets;
     ArrayList<Asteroid> asteroids;
 
+    BitmapFont scoreFont;
+    int score;
+
     public MainGameScreen(SpaceGame game){
         this.game = game;
         y = 15;
         x = SpaceGame.WIDTH/2 - SHIP_WIDTH /2;
+        scoreFont = new BitmapFont(Gdx.files.internal("fonts/myfont.fnt"));
 
+        score = 0;
         shootTimer = 0;
 
         random = new Random();
@@ -108,7 +115,6 @@ public class MainGameScreen implements Screen {
                 asteroidsToRemove.add(asteroid);
             }
         }
-        asteroids.removeAll(asteroidsToRemove);
 
         // Update bullets
         ArrayList<Bullet> bulletsToRemove = new ArrayList<>();
@@ -118,7 +124,6 @@ public class MainGameScreen implements Screen {
                 bulletsToRemove.add(bullet);
             }
         }
-        bullets.removeAll(bulletsToRemove);
 
         // Movement code
         if(Gdx.input.isKeyPressed(Input.Keys.UP) || Gdx.input.isKeyPressed(Input.Keys.W)){
@@ -197,12 +202,30 @@ public class MainGameScreen implements Screen {
                 }
             }
         }
+
+        // After all updates, check for collisions
+        for(Bullet bullet:bullets){
+            for(Asteroid asteroid: asteroids){
+                if(bullet.getRect().collidesWith(asteroid.getRect())){
+                    bulletsToRemove.add(bullet);
+                    asteroidsToRemove.add(asteroid);
+                    score += 100;
+                }
+            }
+        }
+        asteroids.removeAll(asteroidsToRemove);
+        bullets.removeAll(bulletsToRemove);
+
         stateTime += delta;
 
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         game.batch.begin();
+
+        GlyphLayout scoreLayout = new GlyphLayout(scoreFont,""+score);
+        scoreFont.draw(game.batch,scoreLayout,Gdx.graphics.getWidth()/2 - scoreLayout.width/2,
+                Gdx.graphics.getHeight() - scoreLayout.height -10);
 
         for(Bullet bullet : bullets){
             bullet.render(game.batch);
