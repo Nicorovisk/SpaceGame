@@ -251,6 +251,12 @@ public class MainGameScreen implements Screen {
                 asteroidsToRemove.add(asteroid);
                 health -= 0.1f;
             }
+
+            if(health <= 0){
+                this.dispose();
+                game.setScreen(new GameOverScreen(game, score));
+                return;
+            }
         }
         asteroids.removeAll(asteroidsToRemove);
 

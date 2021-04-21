@@ -2,6 +2,7 @@ package com.ngstudios.game;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.ngstudios.game.screens.GameOverScreen;
 import com.ngstudios.game.screens.MainMenuScreen;
 
 public class SpaceGame extends Game {
