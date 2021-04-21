@@ -3,6 +3,7 @@ package com.ngstudios.game.screens;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
@@ -12,7 +13,10 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.ngstudios.game.SpaceGame;
 import com.ngstudios.game.entities.Asteroid;
 import com.ngstudios.game.entities.Bullet;
+import com.ngstudios.game.entities.Explosion;
+import com.ngstudios.game.tools.CollisionRect;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -46,9 +50,15 @@ public class MainGameScreen implements Screen {
 
     ArrayList<Bullet> bullets;
     ArrayList<Asteroid> asteroids;
+    ArrayList<Explosion> explosions;
 
     BitmapFont scoreFont;
     int score;
+
+    CollisionRect playerRect;
+
+    float health = 1; // 1 full life, 0 dead
+    Texture blank;
 
     public MainGameScreen(SpaceGame game){
         this.game = game;
@@ -75,8 +85,13 @@ public class MainGameScreen implements Screen {
         rolls[3] = new Animation(SHIP_ANIMATION_SPEED,rollSpriteSheet[3]); // half right
         rolls[4] = new Animation(SHIP_ANIMATION_SPEED,rollSpriteSheet[4]); // full right
 
+        playerRect = new CollisionRect(0,0, SHIP_WIDTH, SHIP_HEIGHT);
+
+        blank = new Texture("blank.png");
+
         bullets = new ArrayList<>();
         asteroids = new ArrayList<>();
+        explosions = new ArrayList<>();
     }
 
     public void show() {
@@ -124,6 +139,17 @@ public class MainGameScreen implements Screen {
                 bulletsToRemove.add(bullet);
             }
         }
+
+        //Update Explosions
+        ArrayList<Explosion> explosionsToRemove = new ArrayList<>();
+        for(Explosion explosion : explosions){
+            explosion.update(delta);
+            if(explosion.remove){
+                explosionsToRemove.add(explosion);
+            }
+        }
+        explosions.removeAll(explosionsToRemove);
+
 
         // Movement code
         if(Gdx.input.isKeyPressed(Input.Keys.UP) || Gdx.input.isKeyPressed(Input.Keys.W)){
@@ -203,18 +229,30 @@ public class MainGameScreen implements Screen {
             }
         }
 
+        //After player moves update collisionRect
+        playerRect.move(x, y);
+
         // After all updates, check for collisions
         for(Bullet bullet:bullets){
             for(Asteroid asteroid: asteroids){
                 if(bullet.getRect().collidesWith(asteroid.getRect())){
                     bulletsToRemove.add(bullet);
                     asteroidsToRemove.add(asteroid);
+                    explosions.add(new Explosion(asteroid.getX(),asteroid.getY()));
                     score += 100;
                 }
             }
         }
-        asteroids.removeAll(asteroidsToRemove);
+
         bullets.removeAll(bulletsToRemove);
+
+        for(Asteroid asteroid: asteroids){
+            if(asteroid.getRect().collidesWith(playerRect)){
+                asteroidsToRemove.add(asteroid);
+                health -= 0.1f;
+            }
+        }
+        asteroids.removeAll(asteroidsToRemove);
 
         stateTime += delta;
 
@@ -234,6 +272,23 @@ public class MainGameScreen implements Screen {
         for(Asteroid asteroid : asteroids){
             asteroid.render(game.batch);
         }
+
+        for(Explosion explosion : explosions){
+            explosion.render(game.batch);
+        }
+        //Draw Health
+        if(health > 0.6f){
+            game.batch.setColor(Color.GREEN);
+        }
+        else if(health > 0.2f){
+            game.batch.setColor(Color.ORANGE);
+        }
+        else{
+            game.batch.setColor(Color.RED);
+        }
+
+        game.batch.draw(blank,0,0, Gdx.graphics.getWidth()*health,5);
+        game.batch.setColor(Color.WHITE);
 
         game.batch.draw((TextureRegion) rolls[roll].getKeyFrame(stateTime, true), x, y, SHIP_WIDTH, SHIP_HEIGHT);
         game.batch.end();

@@ -45,4 +45,12 @@ public class Asteroid {
     public CollisionRect getRect(){
         return rect;
     }
+
+    public float getX(){
+        return x;
+    }
+
+    public float getY(){
+        return y;
+    }
 }
