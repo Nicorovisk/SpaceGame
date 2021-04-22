@@ -15,8 +15,8 @@ import com.ngstudios.game.entities.Asteroid;
 import com.ngstudios.game.entities.Bullet;
 import com.ngstudios.game.entities.Explosion;
 import com.ngstudios.game.tools.CollisionRect;
+import com.ngstudios.game.tools.ScrollingBackground;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -92,6 +92,9 @@ public class MainGameScreen implements Screen {
         bullets = new ArrayList<>();
         asteroids = new ArrayList<>();
         explosions = new ArrayList<>();
+
+        game.scrollingBackground.setSpeedFixed(false);
+        game.scrollingBackground.setSpeed(ScrollingBackground.DEFAULT_SPEED);
     }
 
     public void show() {
@@ -266,6 +269,8 @@ public class MainGameScreen implements Screen {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         game.batch.begin();
+
+        game.scrollingBackground.updateAndRender(delta, game.batch);
 
         GlyphLayout scoreLayout = new GlyphLayout(scoreFont,""+score);
         scoreFont.draw(game.batch,scoreLayout,Gdx.graphics.getWidth()/2 - scoreLayout.width/2,

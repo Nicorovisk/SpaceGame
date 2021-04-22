@@ -33,6 +33,8 @@ public class MainMenuScreen implements Screen {
         playButtonInactive = new Texture("play_button_inactive.png");
         exitButtonActive = new Texture("exit_button_active.png");
         exitButtonInactive = new Texture("exit_button_inactive.png");
+
+        game.scrollingBackground.setSpeedFixed(true);
     }
     public void show() {
 
@@ -44,13 +46,15 @@ public class MainMenuScreen implements Screen {
 
         game.batch.begin();
 
+        game.scrollingBackground.updateAndRender(delta, game.batch);
+
         //Exit Button
         if(Gdx.input.getX() < EXIT_BUTTON_X + EXIT_BUTTON_WIDTH && Gdx.input.getX() > EXIT_BUTTON_X
                 && SpaceGame.HEIGHT - Gdx.input.getY() < EXIT_BUTTON_Y + EXIT_BUTTON_HEIGTH
                 && SpaceGame.HEIGHT - Gdx.input.getY() > EXIT_BUTTON_Y){
 
             game.batch.draw(exitButtonActive, EXIT_BUTTON_X, EXIT_BUTTON_Y, EXIT_BUTTON_WIDTH, EXIT_BUTTON_HEIGTH);
-            if(Gdx.input.isTouched()){
+            if(Gdx.input.justTouched()){
                 Gdx.app.exit();
             }
         }else{
@@ -63,7 +67,7 @@ public class MainMenuScreen implements Screen {
                 && SpaceGame.HEIGHT - Gdx.input.getY() > PLAY_BUTTON_Y){
 
             game.batch.draw(playButtonActive, EXIT_BUTTON_X, PLAY_BUTTON_Y, PLAY_BUTTON_WIDTH, PLAY_BUTTON_HEIGTH);
-            if(Gdx.input.isTouched()){
+            if(Gdx.input.justTouched()){
                 game.setScreen(new MainGameScreen(game));
             }
         }else{
